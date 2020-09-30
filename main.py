@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 import sys
 # import database as base
 import _sqlite3
@@ -5,6 +6,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets, QtSql
 from des import *
 from PyQt5.QtWidgets import  QMessageBox
 from dict import *
+from tested import *
 
 class Dict (QtWidgets.QMainWindow):
     def __init__(self ,parent=None):
@@ -14,17 +16,11 @@ class Dict (QtWidgets.QMainWindow):
         # self.MyWin_Ex = MyWin()
         # self.dict.pushButton_dict.clicked.connect(self.MyWin_Ex.clear_dict)
 
-    # def getData(self):
-    #     rows = self.dict_window.dict.tableWidget.rowCount ()
-    #     cols = self.dict_window.dict.tableWidget.columnCount ()
-    #     print(rows,cols)
-    #     for row in range (rows):
-    #         for col in range (cols):
-    #             tmp = self.dict_window.dict.tableWidget.item (row ,col).text ()
-    #             print(tmp)
-    #             print('a')
-
-
+class Test(QtWidgets.QMainWindow):
+    def __init__(self,parent=None):
+        QtWidgets.QWidget.__init__ (self ,parent)
+        self.test = Ui_MainWindow_test()
+        self.test.setupUi(self)
 
 class MyWin(QtWidgets.QMainWindow):
     def __init__(self,parent=None):
@@ -34,6 +30,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.row_count = 1
         self.table_index = 0
         self.i_max = 0
+
 
         self.db = _sqlite3.connect('server.db')
         self.sql = self.db.cursor()
@@ -82,7 +79,6 @@ class MyWin(QtWidgets.QMainWindow):
         """)
         self.db.commit()
         for i in range (self.ui.tableWidget.rowCount ()):
-            print(self.ui.tableWidget.cellWidget (i ,2).isChecked ())
             if self.ui.tableWidget.cellWidget (i ,2).isChecked ():
                 self.sql.execute (f"SELECT English FROM dictionary WHERE "
                              f"English = '{self.ui.tableWidget.item(i,0).text()}' ")
@@ -107,6 +103,55 @@ class MyWin(QtWidgets.QMainWindow):
             self.row_count += 1
 
         self.dict_window.dict.pushButton_dict.clicked.connect(lambda:self.clear_dict())
+        self.dict_window.dict.pushButton_test.clicked.connect(lambda:self.pass_test())
+
+
+    def pass_test(self):
+        self.old_words = []
+        if self.dict_window.dict.radioButton.isChecked():
+            self.test_window = Test()
+            self.test_window.show()
+            self.test_window.test.pushButton_2.clicked.connect(self.new_word)
+
+    def new_word(self):
+        self.test_window.test.label.clear()
+        self.test_window.test.listWidget.clear()
+        self.test_window.test.lineEdit.clear()
+
+        self.sql.execute ("""CREATE TABLE IF NOT EXISTS dictionary (
+                               English TEXT,
+                               Russian TEXT)   
+                           """)
+        for value in self.sql.execute ("SELECT * FROM dictionary ORDER BY RANDOM()"):
+            if value[0] not in self.old_words:
+                self.eng_test_value = value[0]
+                self.rus_test_value = value[1]
+                self.test_window.test.listWidget.addItem(self.eng_test_value)
+                self.old_words.append(self.eng_test_value)
+                break
+        print(self.old_words)
+        self.test_window.test.pushButton.clicked.connect (self.res_test)
+    def res_test(self):
+        self.cnt_correct = 0
+        self.cnt_mistakes = 0
+        if self.test_window.test.lineEdit.text() == self.rus_test_value:
+            self.test_window.test.label.setText("Абсолютно верно")
+            self.cnt_correct += 1
+            self.test_window.test.tableWidget.setItem(0,0,QtWidgets.QTableWidgetItem(str(self.cnt_correct)))
+            self.test_window.test.tableWidget.setItem(1,0,QtWidgets.QTableWidgetItem(str(self.cnt_mistakes)))
+            self.test_window.test.tableWidget.setItem(2,0,QtWidgets.QTableWidgetItem(str(self.cnt_correct+self.cnt_mistakes)))
+        else:
+            string = "Не совсем точно:\n {} - {}".format(self.eng_test_value,self.rus_test_value)
+            self.test_window.test.label.setText (string)
+            self.cnt_mistakes += 1
+            self.test_window.test.tableWidget.setItem (0 ,0 ,QtWidgets.QTableWidgetItem (str (self.cnt_correct)))
+            self.test_window.test.tableWidget.setItem (1 ,0 ,QtWidgets.QTableWidgetItem (str (self.cnt_mistakes)))
+            self.test_window.test.tableWidget.setItem (2 ,0 ,QtWidgets.QTableWidgetItem (str (self.cnt_correct + self.cnt_mistakes)))
+
+        # self.test_window.test.pushButton_2.clicked.connect (self.new_word)
+
+
+
 
 
     def clear_dict(self):

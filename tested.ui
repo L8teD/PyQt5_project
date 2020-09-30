@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>325</x>
+      <y>156</y>
+      <width>352</width>
+      <height>79</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Отправить</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>78</y>
+      <width>274</width>
+      <height>66</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>143</x>
+      <y>13</y>
+      <width>40</width>
+      <height>53</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>ENG</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>481</x>
+      <y>13</y>
+      <width>40</width>
+      <height>53</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>RUS</string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="listWidget">
+    <property name="geometry">
+     <rect>
+      <x>52</x>
+      <y>78</y>
+      <width>287</width>
+      <height>66</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>52</x>
+      <y>156</y>
+      <width>209</width>
+      <height>79</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Новое слово</string>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget">
+    <property name="geometry">
+     <rect>
+      <x>455</x>
+      <y>351</y>
+      <width>196</width>
+      <height>144</height>
+     </rect>
+    </property>
+    <row>
+     <property name="text">
+      <string>Верно</string>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string>Ошибки</string>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string>Всего</string>
+     </property>
+    </row>
+    <column>
+     <property name="text">
+      <string>Результаты</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>195</x>
+      <y>260</y>
+      <width>352</width>
+      <height>53</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
