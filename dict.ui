@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>Form_dict</class>
+ <widget class="QWidget" name="Form_dict">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,13 +13,61 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">*
+{
+	background:#c8a2c8;
+	font-size: 15px;
+	font-family: Century Gothic, sans-serif;
+}
+
+QPushButton{
+	background-color: #3cc9c7;
+}
+
+QPushButton:hover{
+	background: #48f0ed;
+}
+
+QHeaderView::section {
+    background-color:#3cc9c7;
+    padding: 4px;
+    font-size: 10pt;
+    border-style: solid;
+    border-bottom: 1px solid #3cc9c7;
+    border-right: 1px solid #3cc9c7;
+}
+
+
+QTableWidget {
+    gridline-color:#3cc9c7 ;
+    font-size: 10pt;
+}
+
+QTableWidget QTableCornerButton::section {
+    background-color:#3cc9c7;
+    border: 1px solid #3cc9c7;
+}
+ QRadioButton {
+     spacing: 5px;
+
+ }
+
+ QRadioButton::indicator {
+     width: 15px;
+     height: 15px;
+	color:red;
+ }
+
+</string>
+  </property>
   <widget class="QTableWidget" name="tableWidget">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>0</y>
+     <x>13</x>
+     <y>13</y>
      <width>417</width>
-     <height>469</height>
+     <height>521</height>
     </rect>
    </property>
    <property name="sizeAdjustPolicy">
@@ -49,7 +97,7 @@
     <string>Очистить словарь</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="pushButton_test">
    <property name="geometry">
     <rect>
      <x>468</x>
@@ -62,31 +110,28 @@
     <string>Пройти тест</string>
    </property>
   </widget>
-  <widget class="QRadioButton" name="radioButton">
+  <widget class="QSplitter" name="splitter">
    <property name="geometry">
     <rect>
-     <x>468</x>
-     <y>221</y>
-     <width>222</width>
-     <height>40</height>
+     <x>481</x>
+     <y>234</y>
+     <width>235</width>
+     <height>53</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Используя слова из словаря</string>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
    </property>
-  </widget>
-  <widget class="QRadioButton" name="radioButton_2">
-   <property name="geometry">
-    <rect>
-     <x>468</x>
-     <y>260</y>
-     <width>209</width>
-     <height>40</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Используя все слова</string>
-   </property>
+   <widget class="QRadioButton" name="radioButton">
+    <property name="text">
+     <string>Используя слова из словаря</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="radioButton_2">
+    <property name="text">
+     <string>Используя все слова</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

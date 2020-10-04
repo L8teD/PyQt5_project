@@ -1,45 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>MainWindow_test</class>
+ <widget class="QMainWindow" name="MainWindow_test">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>713</width>
+    <height>512</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">*
+{
+	background:#c8a2c8;
+	font-size: 15px;
+	font-family: Century Gothic, sans-serif;
+}
+
+QPushButton{
+	background-color: #3cc9c7;
+}
+
+QPushButton:hover{
+	background: #48f0ed;
+}
+
+QHeaderView::section {
+    background-color:#3cc9c7;
+   	padding: 4px;
+    font-size: 10pt;
+    border-style: solid;
+
+}
+
+
+QTableWidget {
+    gridline-color:#3cc9c7 ;
+    font-size: 10pt;
+}
+
+QTableWidget QTableCornerButton::section {
+    background-color:#3cc9c7;
+    border: 1px solid #3cc9c7;
+}
+
+
+</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton">
-    <property name="geometry">
-     <rect>
-      <x>325</x>
-      <y>156</y>
-      <width>352</width>
-      <height>79</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Отправить</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEdit">
-    <property name="geometry">
-     <rect>
-      <x>390</x>
-      <y>78</y>
-      <width>274</width>
-      <height>66</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
@@ -62,40 +74,20 @@
       <height>53</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <property name="text">
      <string>RUS</string>
-    </property>
-   </widget>
-   <widget class="QListWidget" name="listWidget">
-    <property name="geometry">
-     <rect>
-      <x>52</x>
-      <y>78</y>
-      <width>287</width>
-      <height>66</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_2">
-    <property name="geometry">
-     <rect>
-      <x>52</x>
-      <y>156</y>
-      <width>209</width>
-      <height>79</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Новое слово</string>
     </property>
    </widget>
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
-      <x>455</x>
-      <y>351</y>
-      <width>196</width>
-      <height>144</height>
+      <x>52</x>
+      <y>273</y>
+      <width>209</width>
+      <height>157</height>
      </rect>
     </property>
     <row>
@@ -122,15 +114,77 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>195</x>
-      <y>260</y>
+      <x>312</x>
+      <y>286</y>
       <width>352</width>
       <height>53</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel
+{
+	font-size:22px;
+	font-family:&quot;MS Shell Dlg 2&quot;;
+}</string>
+    </property>
     <property name="text">
      <string/>
     </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>286</x>
+      <y>0</y>
+      <width>131</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Поменять языки</string>
+    </property>
+   </widget>
+   <widget class="QSplitter" name="splitter_2">
+    <property name="geometry">
+     <rect>
+      <x>39</x>
+      <y>78</y>
+      <width>638</width>
+      <height>53</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QListWidget" name="listWidget"/>
+    <widget class="QLineEdit" name="lineEdit">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QSplitter" name="splitter">
+    <property name="geometry">
+     <rect>
+      <x>52</x>
+      <y>156</y>
+      <width>625</width>
+      <height>92</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QPushButton" name="pushButton_2">
+     <property name="text">
+      <string>Новое слово</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>Отправить</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -138,7 +192,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>713</width>
      <height>26</height>
     </rect>
    </property>

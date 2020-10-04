@@ -7,6 +7,7 @@ from des import *
 from PyQt5.QtWidgets import  QMessageBox
 from dict import *
 from tested import *
+import time
 
 class Dict (QtWidgets.QMainWindow):
     def __init__(self ,parent=None):
@@ -31,9 +32,9 @@ class MyWin(QtWidgets.QMainWindow):
         self.table_index = 0
         self.i_max = 0
 
-
         self.db = _sqlite3.connect('server.db')
         self.sql = self.db.cursor()
+
 
         self.ui.pushButton.clicked.connect(self.add_table_item)
         self.ui.pushButton_3.clicked.connect(self.delete_table_item)
@@ -44,11 +45,11 @@ class MyWin(QtWidgets.QMainWindow):
     def add_table_item(self):
         self.row_count = 1
         self.table_index = 0
-        if self.ui.checkBox5.isChecked():
+        if self.ui.radioButton.isChecked():
             self.i_max = 5
-        elif self.ui.checkBox10.isChecked():
+        elif self.ui.radioButton_2.isChecked():
             self.i_max = 10
-        elif self.ui.checkBox15.isChecked():
+        elif self.ui.radioButton_3.isChecked():
             self.i_max = 15
         else:
             self.show_error()
@@ -98,22 +99,84 @@ class MyWin(QtWidgets.QMainWindow):
             self.dict_window.dict.tableWidget.setRowCount (self.row_count)
             self.dict_window.dict.tableWidget.setItem (self.table_index ,0 ,QtWidgets.QTableWidgetItem (value[0]))
             self.dict_window.dict.tableWidget.setItem (self.table_index ,1 ,QtWidgets.QTableWidgetItem (value[1]))
-            self.dict_window.dict.tableWidget.resizeColumnsToContents()
+            self.dict_window.dict.tableWidget.resizeColumnsToContents ()
             self.table_index += 1
             self.row_count += 1
+
 
         self.dict_window.dict.pushButton_dict.clicked.connect(lambda:self.clear_dict())
         self.dict_window.dict.pushButton_test.clicked.connect(lambda:self.pass_test())
 
 
     def pass_test(self):
-        self.old_words = []
+        self.cnt_correct = 0
+        self.cnt_mistakes = 0
+        self.old_rus_words =[]
+        self.old_eng_words = []
         if self.dict_window.dict.radioButton.isChecked():
             self.test_window = Test()
             self.test_window.show()
-            self.test_window.test.pushButton_2.clicked.connect(self.new_word)
+            self.test_window.test.pushButton_2.clicked.connect(self.new_word_dict)
+            self.test_window.test.pushButton_3.clicked.connect(self.change_languages)
+        if self.dict_window.dict.radioButton_2.isChecked():
+            self.test_window = Test ()
+            self.test_window.show ()
+            self.test_window.test.pushButton_2.clicked.connect (self.new_word_all)
+            self.test_window.test.pushButton_3.clicked.connect (self.change_languages)
 
-    def new_word(self):
+    def change_languages(self):
+        doc = QtGui.QTextDocument ()
+        doc.setHtml (self.test_window.test.label_2.text ())
+        text = doc.toPlainText ()
+        if text == 'ENG':
+            self.test_window.test.label_2.clear()
+            self.test_window.test.label_3.clear()
+            self.test_window.test.label_2.setText('RUS')
+            self.test_window.test.label_3.setText('ENG')
+
+
+        if text=='RUS':
+            self.test_window.test.label_2.clear()
+            self.test_window.test.label_3.clear()
+            self.test_window.test.label_2.setText('ENG')
+            self.test_window.test.label_3.setText('RUS')
+
+
+    def new_word_all(self):
+        doc = QtGui.QTextDocument ()
+        doc.setHtml (self.test_window.test.label_2.text ())
+        text = doc.toPlainText ()
+        self.test_window.test.label.clear ()
+        self.test_window.test.listWidget.clear ()
+        self.test_window.test.lineEdit.clear ()
+        self.sql.execute ("""CREATE TABLE IF NOT EXISTS english_words (
+                                       English TEXT,
+                                       Russian TEXT)
+                                   """)
+        if text == 'ENG':
+            for value in self.sql.execute ("SELECT * FROM english_words ORDER BY RANDOM()"):
+                if value[0] not in self.old_eng_words:
+                    self.eng_test_value = value[0]
+                    self.rus_test_value = value[1]
+                    self.test_window.test.listWidget.addItem (self.eng_test_value)
+                    self.old_eng_words.append (self.eng_test_value)
+                    break
+        elif text == 'RUS':
+            for value in self.sql.execute ("SELECT * FROM english_words ORDER BY RANDOM()"):
+                if value[1] not in self.old_eng_words:
+                    self.eng_test_value = value[0]
+                    self.rus_test_value = value[1]
+                    self.test_window.test.listWidget.addItem (self.rus_test_value)
+                    self.old_eng_words.append (self.rus_test_value)
+                    break
+
+
+        self.test_window.test.pushButton.clicked.connect (self.res_test)
+
+    def new_word_dict(self):
+        doc = QtGui.QTextDocument ()
+        doc.setHtml (self.test_window.test.label_2.text ())
+        text = doc.toPlainText ()
         self.test_window.test.label.clear()
         self.test_window.test.listWidget.clear()
         self.test_window.test.lineEdit.clear()
@@ -122,35 +185,73 @@ class MyWin(QtWidgets.QMainWindow):
                                English TEXT,
                                Russian TEXT)   
                            """)
-        for value in self.sql.execute ("SELECT * FROM dictionary ORDER BY RANDOM()"):
-            if value[0] not in self.old_words:
-                self.eng_test_value = value[0]
-                self.rus_test_value = value[1]
-                self.test_window.test.listWidget.addItem(self.eng_test_value)
-                self.old_words.append(self.eng_test_value)
-                break
-        print(self.old_words)
+        if text == 'ENG':
+            for value in self.sql.execute ("SELECT * FROM dictionary ORDER BY RANDOM()"):
+                if value[0] not in self.old_eng_words:
+                    self.eng_test_value = value[0]
+                    self.rus_test_value = value[1]
+                    self.test_window.test.listWidget.addItem(self.eng_test_value)
+                    self.old_eng_words.append(self.eng_test_value)
+                    break
+        elif text == 'RUS':
+            for value in self.sql.execute ("SELECT * FROM dictionary ORDER BY RANDOM()"):
+                if value[1] not in self.old_eng_words:
+                    self.eng_test_value = value[0]
+                    self.rus_test_value = value[1]
+                    self.test_window.test.listWidget.addItem (self.rus_test_value)
+                    self.old_eng_words.append (self.rus_test_value)
+                    break
         self.test_window.test.pushButton.clicked.connect (self.res_test)
+
+
     def res_test(self):
-        self.cnt_correct = 0
-        self.cnt_mistakes = 0
-        if self.test_window.test.lineEdit.text() == self.rus_test_value:
-            self.test_window.test.label.setText("Абсолютно верно")
-            self.cnt_correct += 1
-            self.test_window.test.tableWidget.setItem(0,0,QtWidgets.QTableWidgetItem(str(self.cnt_correct)))
-            self.test_window.test.tableWidget.setItem(1,0,QtWidgets.QTableWidgetItem(str(self.cnt_mistakes)))
-            self.test_window.test.tableWidget.setItem(2,0,QtWidgets.QTableWidgetItem(str(self.cnt_correct+self.cnt_mistakes)))
-        else:
-            string = "Не совсем точно:\n {} - {}".format(self.eng_test_value,self.rus_test_value)
-            self.test_window.test.label.setText (string)
-            self.cnt_mistakes += 1
-            self.test_window.test.tableWidget.setItem (0 ,0 ,QtWidgets.QTableWidgetItem (str (self.cnt_correct)))
-            self.test_window.test.tableWidget.setItem (1 ,0 ,QtWidgets.QTableWidgetItem (str (self.cnt_mistakes)))
-            self.test_window.test.tableWidget.setItem (2 ,0 ,QtWidgets.QTableWidgetItem (str (self.cnt_correct + self.cnt_mistakes)))
+        doc = QtGui.QTextDocument ()
+        doc.setHtml (self.test_window.test.label_2.text ())
+        text = doc.toPlainText ()
+        if text == 'ENG':
+            if self.test_window.test.lineEdit.text() != '':
+                if self.test_window.test.lineEdit.text() not in self.old_rus_words:
+                    self.old_rus_words.append(self.test_window.test.lineEdit.text())
+                    if self.test_window.test.lineEdit.text() == self.rus_test_value:
+                        self.test_window.test.label.setText("Абсолютно верно")
+                        self.cnt_correct += 1
 
-        # self.test_window.test.pushButton_2.clicked.connect (self.new_word)
+                        self.test_window.test.tableWidget.setItem(0,0,QtWidgets.QTableWidgetItem(str(self.cnt_correct)))
+                        self.test_window.test.tableWidget.setItem(1,0,QtWidgets.QTableWidgetItem(str(self.cnt_mistakes)))
+                        self.test_window.test.tableWidget.setItem(2,0,QtWidgets.QTableWidgetItem(str(self.cnt_correct+self.cnt_mistakes)))
+                    else:
+                        string = "Не совсем точно:\n {} - {}".format(self.eng_test_value,self.rus_test_value)
+                        self.test_window.test.label.setText (string)
+                        self.cnt_mistakes += 1
 
+                        self.test_window.test.tableWidget.setItem (0 ,0 ,QtWidgets.QTableWidgetItem (str (self.cnt_correct)))
+                        self.test_window.test.tableWidget.setItem (1 ,0 ,QtWidgets.QTableWidgetItem (str (self.cnt_mistakes)))
+                        self.test_window.test.tableWidget.setItem (2 ,0 ,QtWidgets.QTableWidgetItem (str (self.cnt_correct + self.cnt_mistakes)))
+        elif text == 'RUS':
+            if self.test_window.test.lineEdit.text () != '':
+                if self.test_window.test.lineEdit.text () not in self.old_rus_words:
+                    self.old_rus_words.append (self.test_window.test.lineEdit.text ())
+                    if self.test_window.test.lineEdit.text () == self.eng_test_value:
+                        self.test_window.test.label.setText ("Абсолютно верно")
+                        self.cnt_correct += 1
 
+                        self.test_window.test.tableWidget.setItem (0 ,0 ,
+                                                                   QtWidgets.QTableWidgetItem (str (self.cnt_correct)))
+                        self.test_window.test.tableWidget.setItem (1 ,0 ,
+                                                                   QtWidgets.QTableWidgetItem (str (self.cnt_mistakes)))
+                        self.test_window.test.tableWidget.setItem (2 ,0 ,QtWidgets.QTableWidgetItem (
+                            str (self.cnt_correct + self.cnt_mistakes)))
+                    else:
+                        string = "Не совсем точно:\n {} - {}".format (self.eng_test_value ,self.rus_test_value)
+                        self.test_window.test.label.setText (string)
+                        self.cnt_mistakes += 1
+
+                        self.test_window.test.tableWidget.setItem (0 ,0 ,
+                                                                   QtWidgets.QTableWidgetItem (str (self.cnt_correct)))
+                        self.test_window.test.tableWidget.setItem (1 ,0 ,
+                                                                   QtWidgets.QTableWidgetItem (str (self.cnt_mistakes)))
+                        self.test_window.test.tableWidget.setItem (2 ,0 ,QtWidgets.QTableWidgetItem (
+                            str (self.cnt_correct + self.cnt_mistakes)))
 
 
 
@@ -166,8 +267,6 @@ class MyWin(QtWidgets.QMainWindow):
         self.dict_window_current.dict.tableWidget.setHorizontalHeaderItem (1 ,QtWidgets.QTableWidgetItem ('Russian'))
 
         return self.dict_window.close()
-
-
 
 
     def delete_table_item(self):
