@@ -47,9 +47,9 @@ class MyWin(QtWidgets.QMainWindow):
         self.table_index = 0
         if self.ui.radioButton.isChecked():
             self.i_max = 5
-        elif self.ui.radioButton_2.isChecked():
-            self.i_max = 10
         elif self.ui.radioButton_3.isChecked():
+            self.i_max = 10
+        elif self.ui.radioButton_2.isChecked():
             self.i_max = 15
         else:
             self.show_error()
@@ -89,6 +89,7 @@ class MyWin(QtWidgets.QMainWindow):
                     self.db.commit()
 
 
+
     def open_dict(self):
         self.row_count = 1
         self.table_index = 0
@@ -99,13 +100,26 @@ class MyWin(QtWidgets.QMainWindow):
             self.dict_window.dict.tableWidget.setRowCount (self.row_count)
             self.dict_window.dict.tableWidget.setItem (self.table_index ,0 ,QtWidgets.QTableWidgetItem (value[0]))
             self.dict_window.dict.tableWidget.setItem (self.table_index ,1 ,QtWidgets.QTableWidgetItem (value[1]))
+            self.dict_window.dict.tableWidget.setCellWidget (self.table_index ,2 ,QtWidgets.QCheckBox ())
             self.dict_window.dict.tableWidget.resizeColumnsToContents ()
             self.table_index += 1
             self.row_count += 1
 
 
+
+
         self.dict_window.dict.pushButton_dict.clicked.connect(lambda:self.clear_dict())
         self.dict_window.dict.pushButton_test.clicked.connect(lambda:self.pass_test())
+        self.dict_window.dict.pushButton_2.clicked.connect(lambda :self.del_selected())
+
+    def del_selected(self):
+
+        for i in range (self.dict_window.dict.tableWidget.rowCount ()):
+            if self.dict_window.dict.tableWidget.cellWidget(i,2).isChecked():
+                self.sql.execute(f"DELETE FROM dictionary WHERE English = '{self.dict_window.dict.tableWidget.item(i,0).text()}'")
+                self.db.commit()
+        return self.open_dict()
+
 
 
     def pass_test(self):
@@ -279,8 +293,8 @@ class MyWin(QtWidgets.QMainWindow):
 
     def show_error(self):
         msg = QMessageBox()
-        msg.setWindowTitle('Error')
-        msg.setText('Error')
+        msg.setWindowTitle('Ошибка')
+        msg.setText('Выберите количество вводимых слов')
         msg.setIcon(QMessageBox.Information)
         x=msg.exec_()
 

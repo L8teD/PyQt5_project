@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>804</width>
-    <height>622</height>
+    <width>1026</width>
+    <height>723</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -66,8 +66,8 @@ QTableWidget QTableCornerButton::section {
     <rect>
      <x>13</x>
      <y>13</y>
-     <width>417</width>
-     <height>521</height>
+     <width>495</width>
+     <height>703</height>
     </rect>
    </property>
    <property name="sizeAdjustPolicy">
@@ -83,25 +83,17 @@ QTableWidget QTableCornerButton::section {
      <string>Russian words</string>
     </property>
    </column>
-  </widget>
-  <widget class="QPushButton" name="pushButton_dict">
-   <property name="geometry">
-    <rect>
-     <x>468</x>
-     <y>26</y>
-     <width>261</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Очистить словарь</string>
-   </property>
+   <column>
+    <property name="text">
+     <string>Check</string>
+    </property>
+   </column>
   </widget>
   <widget class="QPushButton" name="pushButton_test">
    <property name="geometry">
     <rect>
-     <x>468</x>
-     <y>156</y>
+     <x>611</x>
+     <y>247</y>
      <width>261</width>
      <height>66</height>
     </rect>
@@ -113,8 +105,8 @@ QTableWidget QTableCornerButton::section {
   <widget class="QSplitter" name="splitter">
    <property name="geometry">
     <rect>
-     <x>481</x>
-     <y>234</y>
+     <x>624</x>
+     <y>325</y>
      <width>235</width>
      <height>53</height>
     </rect>
@@ -130,6 +122,29 @@ QTableWidget QTableCornerButton::section {
    <widget class="QRadioButton" name="radioButton_2">
     <property name="text">
      <string>Используя все слова</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QSplitter" name="splitter_2">
+   <property name="geometry">
+    <rect>
+     <x>611</x>
+     <y>26</y>
+     <width>274</width>
+     <height>131</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="text">
+     <string>Удалить выбранные элементы</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_dict">
+    <property name="text">
+     <string>Очистить словарь</string>
     </property>
    </widget>
   </widget>
