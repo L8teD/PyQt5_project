@@ -1,28 +1,26 @@
 # -*- coding: utf8 -*-
 import sys
-# import database as base
 import _sqlite3
-from PyQt5 import QtCore, QtGui, QtWidgets, QtSql
 from des import *
 from PyQt5.QtWidgets import  QMessageBox
 from dict import *
 from tested import *
-import time
 
+"""Создание объекта окна словаря"""
 class Dict (QtWidgets.QMainWindow):
     def __init__(self ,parent=None):
         QtWidgets.QWidget.__init__(self,parent)
         self.dict = Ui_Form_dict ()
         self.dict.setupUi (self)
-        # self.MyWin_Ex = MyWin()
-        # self.dict.pushButton_dict.clicked.connect(self.MyWin_Ex.clear_dict)
 
+"""Создание объекта окна теста"""
 class Test(QtWidgets.QMainWindow):
     def __init__(self,parent=None):
         QtWidgets.QWidget.__init__ (self ,parent)
         self.test = Ui_MainWindow_test()
         self.test.setupUi(self)
 
+"""Создание главного окна"""
 class MyWin(QtWidgets.QMainWindow):
     def __init__(self,parent=None):
         QtWidgets.QWidget.__init__(self,parent)
@@ -30,38 +28,39 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.row_count = 1
         self.table_index = 0
-        self.i_max = 0
+        self.cnt_wrd = 0
 
         self.db = _sqlite3.connect('server.db')
         self.sql = self.db.cursor()
 
 
-        self.ui.pushButton.clicked.connect(self.add_table_item)
-        self.ui.pushButton_3.clicked.connect(self.delete_table_item)
-        self.ui.pushButton_2.clicked.connect(self.make_dict)
-        self.ui.pushButton_4.clicked.connect(self.open_dict)
+        self.ui.pushButton_add.clicked.connect(self.add_table_item)
+        self.ui.pushButton_del.clicked.connect(self.delete_table_item)
+        self.ui.pushButton_make.clicked.connect(self.make_dict)
+        self.ui.pushButton_open.clicked.connect(self.open_dict)
 
 
     def add_table_item(self):
         self.row_count = 1
         self.table_index = 0
         if self.ui.radioButton.isChecked():
-            self.i_max = 5
+            self.cnt_wrd = 5
         elif self.ui.radioButton_3.isChecked():
-            self.i_max = 10
+            self.cnt_wrd = 10
         elif self.ui.radioButton_2.isChecked():
-            self.i_max = 15
+            self.cnt_wrd = 15
         else:
-            self.show_error()
-        i = 0
+            self.show_error_dict()
 
         self.sql.execute ("""CREATE TABLE IF NOT EXISTS english_words (
             English TEXT,
             Russian TEXT)   
         """)
         self.db.commit()
+
+        i = 0
         for value in self.sql.execute("SELECT * FROM english_words ORDER BY RANDOM()"):
-            if i < self.i_max:
+            if i < self.cnt_wrd:
                 self.ui.tableWidget.setRowCount (self.row_count)
                 self.ui.tableWidget.setItem (self.table_index ,0 ,QtWidgets.QTableWidgetItem (value[0]))
                 self.ui.tableWidget.setItem (self.table_index ,1 ,QtWidgets.QTableWidgetItem (value[1]))
@@ -73,7 +72,7 @@ class MyWin(QtWidgets.QMainWindow):
 
 
     def make_dict(self):
-        
+
         self.sql.execute ("""CREATE TABLE IF NOT EXISTS dictionary (
             English TEXT,
             Russian TEXT)   
@@ -108,9 +107,9 @@ class MyWin(QtWidgets.QMainWindow):
 
 
 
-        self.dict_window.dict.pushButton_dict.clicked.connect(lambda:self.clear_dict())
+        self.dict_window.dict.pushButton_ALL.clicked.connect(lambda:self.clear_dict())
         self.dict_window.dict.pushButton_test.clicked.connect(lambda:self.pass_test())
-        self.dict_window.dict.pushButton_2.clicked.connect(lambda :self.del_selected())
+        self.dict_window.dict.pushButton_SEL.clicked.connect(lambda :self.del_selected())
 
     def del_selected(self):
 
@@ -125,18 +124,22 @@ class MyWin(QtWidgets.QMainWindow):
     def pass_test(self):
         self.cnt_correct = 0
         self.cnt_mistakes = 0
-        self.old_rus_words =[]
+        self.old_rus_words = []
         self.old_eng_words = []
         if self.dict_window.dict.radioButton.isChecked():
             self.test_window = Test()
             self.test_window.show()
-            self.test_window.test.pushButton_2.clicked.connect(self.new_word_dict)
-            self.test_window.test.pushButton_3.clicked.connect(self.change_languages)
-        if self.dict_window.dict.radioButton_2.isChecked():
+            self.test_window.test.pushButton_new.clicked.connect(self.new_word_dict)
+            self.test_window.test.pushButton_switch.clicked.connect(self.change_languages)
+        elif self.dict_window.dict.radioButton_2.isChecked():
             self.test_window = Test ()
             self.test_window.show ()
-            self.test_window.test.pushButton_2.clicked.connect (self.new_word_all)
-            self.test_window.test.pushButton_3.clicked.connect (self.change_languages)
+            self.test_window.test.pushButton_new.clicked.connect (self.new_word_all)
+            self.test_window.test.pushButton_switch.clicked.connect (self.change_languages)
+        else:
+            self.show_error_test ()
+
+
 
     def change_languages(self):
         doc = QtGui.QTextDocument ()
@@ -185,7 +188,7 @@ class MyWin(QtWidgets.QMainWindow):
                     break
 
 
-        self.test_window.test.pushButton.clicked.connect (self.res_test)
+        self.test_window.test.pushButton_send.clicked.connect (self.res_test)
 
     def new_word_dict(self):
         doc = QtGui.QTextDocument ()
@@ -215,7 +218,7 @@ class MyWin(QtWidgets.QMainWindow):
                     self.test_window.test.listWidget.addItem (self.rus_test_value)
                     self.old_eng_words.append (self.rus_test_value)
                     break
-        self.test_window.test.pushButton.clicked.connect (self.res_test)
+        self.test_window.test.pushButton_send.clicked.connect (self.res_test)
 
 
     def res_test(self):
@@ -291,12 +294,19 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.tableWidget.setHorizontalHeaderItem (1 ,QtWidgets.QTableWidgetItem ('Russian'))
         self.ui.tableWidget.setHorizontalHeaderItem (2 ,QtWidgets.QTableWidgetItem ('Check'))
 
-    def show_error(self):
+    def show_error_dict(self):
         msg = QMessageBox()
         msg.setWindowTitle('Ошибка')
         msg.setText('Выберите количество вводимых слов')
         msg.setIcon(QMessageBox.Information)
-        x=msg.exec_()
+        msg.exec_()
+
+    def show_error_test(self):
+        msg = QMessageBox()
+        msg.setWindowTitle('Ошибка')
+        msg.setText('Выберите список, используемых слов')
+        msg.setIcon(QMessageBox.Information)
+        msg.exec_()
 
 
 # Back up the reference to the exceptionhook

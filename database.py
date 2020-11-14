@@ -10,21 +10,18 @@ sql.execute("""CREATE TABLE IF NOT EXISTS english_words (
 """)
 
 db.commit()
+
 j=0
 
-while j<=5000:
-
-    x = parse.get_english_words()
-
+while j <= 5000:
+    x = parse.GetEnglishWords()
     eng, rus = x.parse()
     for i in range(len(eng)):
         sql.execute(f"SELECT English FROM english_words WHERE English = '{eng[i]}' ")
         if sql.fetchone() is None:
             sql.execute(f"INSERT INTO english_words VALUES (?, ?)",(eng[i],rus[i]))
             db.commit()
-    print(j)
     j+=1
-
 
 db.close()
 
