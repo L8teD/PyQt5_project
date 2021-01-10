@@ -87,8 +87,8 @@ class Ui_Form_dict(object):
         self.splitter_2.setGeometry(QtCore.QRect(611, 26, 274, 131))
         self.splitter_2.setOrientation(QtCore.Qt.Vertical)
         self.splitter_2.setObjectName("splitter_2")
-        self.pushButton_SEL = QtWidgets.QPushButton(self.splitter_2)
-        self.pushButton_SEL.setObjectName("pushButton_SEL")
+        self.pushButton_DEL = QtWidgets.QPushButton(self.splitter_2)
+        self.pushButton_DEL.setObjectName("pushButton_DEL")
         self.pushButton_ALL = QtWidgets.QPushButton(self.splitter_2)
         self.pushButton_ALL.setObjectName("pushButton_ALL")
 
@@ -107,5 +107,5 @@ class Ui_Form_dict(object):
         self.pushButton_test.setText(_translate("Form_dict", "Пройти тест"))
         self.radioButton.setText(_translate("Form_dict", "Используя слова из словаря"))
         self.radioButton_2.setText(_translate("Form_dict", "Используя все слова"))
-        self.pushButton_SEL.setText(_translate("Form_dict", "Удалить выбранные элементы"))
+        self.pushButton_DEL.setText(_translate("Form_dict", "Удалить выбранные элементы"))
         self.pushButton_ALL.setText(_translate("Form_dict", "Очистить словарь"))

@@ -26,20 +26,22 @@ class MyWin(QtWidgets.QMainWindow):
         QtWidgets.QWidget.__init__(self,parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        # Параметры таблицы
         self.row_count = 1
         self.table_index = 0
+        # Кол-во выводимых слов
         self.cnt_wrd = 0
-
+        # Открытие БД
         self.db = _sqlite3.connect('server.db')
         self.sql = self.db.cursor()
 
-
+        # Кнопки главного окна
         self.ui.pushButton_add.clicked.connect(self.add_table_item)
         self.ui.pushButton_del.clicked.connect(self.delete_table_item)
         self.ui.pushButton_make.clicked.connect(self.make_dict)
         self.ui.pushButton_open.clicked.connect(self.open_dict)
 
-
+    """Заполнение таблицы главного окна"""
     def add_table_item(self):
         self.row_count = 1
         self.table_index = 0
@@ -51,16 +53,16 @@ class MyWin(QtWidgets.QMainWindow):
             self.cnt_wrd = 15
         else:
             self.show_error_dict()
-
+        # Открываем таблицу англ. слов внутри БД
         self.sql.execute ("""CREATE TABLE IF NOT EXISTS english_words (
             English TEXT,
             Russian TEXT)   
         """)
         self.db.commit()
 
-        i = 0
+        curr_wrd = 0 # Счетчик уже занесенных в таблицу слов
         for value in self.sql.execute("SELECT * FROM english_words ORDER BY RANDOM()"):
-            if i < self.cnt_wrd:
+            if curr_wrd < self.cnt_wrd:
                 self.ui.tableWidget.setRowCount (self.row_count)
                 self.ui.tableWidget.setItem (self.table_index ,0 ,QtWidgets.QTableWidgetItem (value[0]))
                 self.ui.tableWidget.setItem (self.table_index ,1 ,QtWidgets.QTableWidgetItem (value[1]))
@@ -68,33 +70,35 @@ class MyWin(QtWidgets.QMainWindow):
                 self.ui.tableWidget.resizeColumnsToContents()
                 self.table_index += 1
                 self.row_count += 1
-            i += 1
+                curr_wrd += 1
 
-
+    """Формирование словаря"""
     def make_dict(self):
-
+        """Создаем таблицу словаря"""
         self.sql.execute ("""CREATE TABLE IF NOT EXISTS dictionary (
             English TEXT,
             Russian TEXT)   
         """)
         self.db.commit()
+        """Формируем таблицу БД в соответствии с отметками в таблице словаря"""
         for i in range (self.ui.tableWidget.rowCount ()):
             if self.ui.tableWidget.cellWidget (i ,2).isChecked ():
                 self.sql.execute (f"SELECT English FROM dictionary WHERE "
                              f"English = '{self.ui.tableWidget.item(i,0).text()}' ")
-                if self.sql.fetchone() is None:
+                if self.sql.fetchone() is None: # Является ли строка таблицы БД пустой
                     self.sql.execute(f"INSERT INTO dictionary VALUES (?, ?)",
                                 (self.ui.tableWidget.item(i,0).text(),self.ui.tableWidget.item(i,1).text()))
                     self.db.commit()
 
 
-
+    """Открытие словаря в новом окне"""
     def open_dict(self):
         self.row_count = 1
         self.table_index = 0
+        """Инициализация объекта окна словаря"""
         self.dict_window = Dict()
         self.dict_window.show()
-
+        """Заполняем таблицу словаря"""
         for value in self.sql.execute ("SELECT * FROM dictionary"):
             self.dict_window.dict.tableWidget.setRowCount (self.row_count)
             self.dict_window.dict.tableWidget.setItem (self.table_index ,0 ,QtWidgets.QTableWidgetItem (value[0]))
@@ -103,54 +107,51 @@ class MyWin(QtWidgets.QMainWindow):
             self.dict_window.dict.tableWidget.resizeColumnsToContents ()
             self.table_index += 1
             self.row_count += 1
-
-
-
-
+        """Кнопки окна словаря"""
         self.dict_window.dict.pushButton_ALL.clicked.connect(lambda:self.clear_dict())
         self.dict_window.dict.pushButton_test.clicked.connect(lambda:self.pass_test())
-        self.dict_window.dict.pushButton_SEL.clicked.connect(lambda :self.del_selected())
+        self.dict_window.dict.pushButton_DEL.clicked.connect(lambda:self.del_selected())
 
+    """Удаление выбранных слов из словаря"""
     def del_selected(self):
-
         for i in range (self.dict_window.dict.tableWidget.rowCount ()):
             if self.dict_window.dict.tableWidget.cellWidget(i,2).isChecked():
                 self.sql.execute(f"DELETE FROM dictionary WHERE English = '{self.dict_window.dict.tableWidget.item(i,0).text()}'")
                 self.db.commit()
-        return self.open_dict()
+        return self.open_dict() # Открываем окно словаря заново
 
-
-
+    """Открытия окна с тестом"""
     def pass_test(self):
         self.cnt_correct = 0
         self.cnt_mistakes = 0
         self.old_rus_words = []
         self.old_eng_words = []
         if self.dict_window.dict.radioButton.isChecked():
-            self.test_window = Test()
+            self.test_window = Test() # Инициализация объекта окна теста
             self.test_window.show()
-            self.test_window.test.pushButton_new.clicked.connect(self.new_word_dict)
+            """Кнопки окна с тестом"""
+            self.test_window.test.pushButton_new.clicked.connect(self.new_word_dict) # Слова из словаря
             self.test_window.test.pushButton_switch.clicked.connect(self.change_languages)
         elif self.dict_window.dict.radioButton_2.isChecked():
-            self.test_window = Test ()
+            self.test_window = Test () # Инициализация объекта окна теста
             self.test_window.show ()
-            self.test_window.test.pushButton_new.clicked.connect (self.new_word_all)
+            """Кнопки окна с тестом"""
+            self.test_window.test.pushButton_new.clicked.connect (self.new_word_all) # Все слова
             self.test_window.test.pushButton_switch.clicked.connect (self.change_languages)
         else:
             self.show_error_test ()
 
-
-
+    """Функция смены языков"""
     def change_languages(self):
         doc = QtGui.QTextDocument ()
         doc.setHtml (self.test_window.test.label_2.text ())
         text = doc.toPlainText ()
+
         if text == 'ENG':
             self.test_window.test.label_2.clear()
             self.test_window.test.label_3.clear()
             self.test_window.test.label_2.setText('RUS')
             self.test_window.test.label_3.setText('ENG')
-
 
         if text=='RUS':
             self.test_window.test.label_2.clear()
@@ -158,7 +159,7 @@ class MyWin(QtWidgets.QMainWindow):
             self.test_window.test.label_2.setText('ENG')
             self.test_window.test.label_3.setText('RUS')
 
-
+    """Добавление нового слова из БД"""
     def new_word_all(self):
         doc = QtGui.QTextDocument ()
         doc.setHtml (self.test_window.test.label_2.text ())
@@ -172,7 +173,7 @@ class MyWin(QtWidgets.QMainWindow):
                                    """)
         if text == 'ENG':
             for value in self.sql.execute ("SELECT * FROM english_words ORDER BY RANDOM()"):
-                if value[0] not in self.old_eng_words:
+                if value[0] not in self.old_eng_words: # Добавлялось ли слово раньше
                     self.eng_test_value = value[0]
                     self.rus_test_value = value[1]
                     self.test_window.test.listWidget.addItem (self.eng_test_value)
@@ -180,16 +181,16 @@ class MyWin(QtWidgets.QMainWindow):
                     break
         elif text == 'RUS':
             for value in self.sql.execute ("SELECT * FROM english_words ORDER BY RANDOM()"):
-                if value[1] not in self.old_eng_words:
+                if value[1] not in self.old_eng_words: # Добавлялось ли слово раньше
                     self.eng_test_value = value[0]
                     self.rus_test_value = value[1]
                     self.test_window.test.listWidget.addItem (self.rus_test_value)
                     self.old_eng_words.append (self.rus_test_value)
                     break
 
-
         self.test_window.test.pushButton_send.clicked.connect (self.res_test)
 
+    """Добавление нового слова из словаря"""
     def new_word_dict(self):
         doc = QtGui.QTextDocument ()
         doc.setHtml (self.test_window.test.label_2.text ())
@@ -204,7 +205,7 @@ class MyWin(QtWidgets.QMainWindow):
                            """)
         if text == 'ENG':
             for value in self.sql.execute ("SELECT * FROM dictionary ORDER BY RANDOM()"):
-                if value[0] not in self.old_eng_words:
+                if value[0] not in self.old_eng_words: # Добавлялось ли слово раньше
                     self.eng_test_value = value[0]
                     self.rus_test_value = value[1]
                     self.test_window.test.listWidget.addItem(self.eng_test_value)
@@ -212,7 +213,7 @@ class MyWin(QtWidgets.QMainWindow):
                     break
         elif text == 'RUS':
             for value in self.sql.execute ("SELECT * FROM dictionary ORDER BY RANDOM()"):
-                if value[1] not in self.old_eng_words:
+                if value[1] not in self.old_eng_words: # Добавлялось ли слово раньше
                     self.eng_test_value = value[0]
                     self.rus_test_value = value[1]
                     self.test_window.test.listWidget.addItem (self.rus_test_value)
@@ -220,7 +221,7 @@ class MyWin(QtWidgets.QMainWindow):
                     break
         self.test_window.test.pushButton_send.clicked.connect (self.res_test)
 
-
+    """Вывод результатов теста"""
     def res_test(self):
         doc = QtGui.QTextDocument ()
         doc.setHtml (self.test_window.test.label_2.text ())
@@ -256,8 +257,7 @@ class MyWin(QtWidgets.QMainWindow):
                                                                    QtWidgets.QTableWidgetItem (str (self.cnt_correct)))
                         self.test_window.test.tableWidget.setItem (1 ,0 ,
                                                                    QtWidgets.QTableWidgetItem (str (self.cnt_mistakes)))
-                        self.test_window.test.tableWidget.setItem (2 ,0 ,QtWidgets.QTableWidgetItem (
-                            str (self.cnt_correct + self.cnt_mistakes)))
+                        self.test_window.test.tableWidget.setItem (2 ,0 ,QtWidgets.QTableWidgetItem (str (self.cnt_correct + self.cnt_mistakes)))
                     else:
                         string = "Не совсем точно:\n {} - {}".format (self.eng_test_value ,self.rus_test_value)
                         self.test_window.test.label.setText (string)
@@ -271,7 +271,7 @@ class MyWin(QtWidgets.QMainWindow):
                             str (self.cnt_correct + self.cnt_mistakes)))
 
 
-
+    """Очистка словаря"""
     def clear_dict(self):
         self.dict_window_current = Dict()
         self.dict_window_current.show()
@@ -285,7 +285,7 @@ class MyWin(QtWidgets.QMainWindow):
 
         return self.dict_window.close()
 
-
+    """Очистка таблицы главного окна"""
     def delete_table_item(self):
         self.table_index = 0
         self.row_count = 1
@@ -293,7 +293,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.tableWidget.setHorizontalHeaderItem (0 ,QtWidgets.QTableWidgetItem ('English'))
         self.ui.tableWidget.setHorizontalHeaderItem (1 ,QtWidgets.QTableWidgetItem ('Russian'))
         self.ui.tableWidget.setHorizontalHeaderItem (2 ,QtWidgets.QTableWidgetItem ('Check'))
-
+    """Показ окна с ошибкой"""
     def show_error_dict(self):
         msg = QMessageBox()
         msg.setWindowTitle('Ошибка')
@@ -301,6 +301,7 @@ class MyWin(QtWidgets.QMainWindow):
         msg.setIcon(QMessageBox.Information)
         msg.exec_()
 
+    """Показ окна с ошибкой"""
     def show_error_test(self):
         msg = QMessageBox()
         msg.setWindowTitle('Ошибка')
@@ -309,17 +310,16 @@ class MyWin(QtWidgets.QMainWindow):
         msg.exec_()
 
 
-# Back up the reference to the exceptionhook
+# Ссылка на перехватчик исключений
 sys._excepthook = sys.excepthook
 
 def my_exception_hook(exctype, value, traceback):
-    # Print the error and traceback
+    # Вывести ошибку и ее трейсбек
     print(exctype, value, traceback)
-    # Call the normal Exception hook after
     sys._excepthook(exctype, value, traceback)
     sys.exit(1)
 
-# Set the exception hook to our wrapping function
+# Установить ловушку исключений
 sys.excepthook = my_exception_hook
 
 if __name__ == '__main__':

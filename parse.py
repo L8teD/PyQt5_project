@@ -27,7 +27,7 @@ class GetEnglishWords:
         for i in con_rus:
             for j in i:
                 self.rus_list.append (j)
-
+        """Возвращаем 2 списка, по 20 слов в каждом"""
         return self.eng_list, self.rus_list
 
 
